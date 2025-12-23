@@ -1,0 +1,19 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-25",
+      "path": "/Library/Java/JavaVirtualMachines/jdk-25.jdk/Contents/Home",
+      "default": true
+    }
+  ],
+  "spring-boot.ls.java.home": "/Library/Java/JavaVirtualMachines/jdk-25.jdk/Contents/Home",
+  "java.home": "/Library/Java/JavaVirtualMachines/jdk-25.jdk/Contents/Home",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/target": true
+  }
+}
+

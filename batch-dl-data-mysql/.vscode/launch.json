@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-BatchDataApplication",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.evertecinc.data.app.BatchDataApplication",
+      "projectName": "batch-dl-data-mysql",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": "-Xms512m -Xmx1024m -XX:+UseG1GC -Djava.security.egd=file:/dev/./urandom -Dspring.backgroundpreinitializer.ignore=true"
+    }
+  ]
+}
+

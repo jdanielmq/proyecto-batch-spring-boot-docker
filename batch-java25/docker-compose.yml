@@ -1,0 +1,104 @@
+services:
+  # ============================================
+  # MySQL Database Service
+  # ============================================
+  db:
+    image: mysql:8.0
+    container_name: batch-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-Evertec.2025}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-spring_batch_db}
+      MYSQL_ROOT_USERNAME: ${MYSQL_ROOT_USERNAME:-root}
+    volumes:
+      # Persistir datos de MySQL
+      - mysql_data:/var/lib/mysql
+      # Script de inicialización de base de datos
+      - ./script/init-mysql.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3308:3306"
+    networks:
+      - spring-batch-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # Spring Boot Batch Application Service
+  # ============================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: batch-app
+    restart: unless-stopped
+    environment:
+      # Database configuration (using docker-compose service name 'db')
+      # Variables con valores por defecto si no están en .env
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE:-spring_batch_db}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_ROOT_USERNAME:-root}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-Evertec.2025}
+      # Activate Docker profile to use application-docker.properties
+      SPRING_PROFILES_ACTIVE: docker
+      # Batch configuration
+      SPRING_BATCH_JOB_ENABLED: "false"
+      SPRING_BATCH_JDBC_INITIALIZE_SCHEMA: always
+    ports:
+      - "8080:8080"
+    volumes:
+      # Map local data folder for CSV file processing
+      - ./data:/app/data
+    depends_on:
+      # Wait for database to be healthy before starting app
+      db:
+        condition: service_healthy
+      # Wait for batch-dl-data-mysql to be ready (app needs the API)
+      batch-dl-data-mysql:
+        condition: service_started
+    networks:
+      - spring-batch-network
+
+  # ============================================
+  # Spring Boot Batch Data MySQL Application Service
+  # ============================================
+  # Configuración basada en application-docker.properties
+  batch-dl-data-mysql:
+    build:
+      context: ../batch-dl-data-mysql
+      dockerfile: Dockerfile
+    container_name: batch-dl-data-mysql-app
+    restart: unless-stopped
+    environment:
+      # Activate Docker profile to use application-docker.properties
+      # El perfil docker carga application-docker.properties que contiene:
+      # - server.port=8585
+      SPRING_PROFILES_ACTIVE: docker
+      # Variables de entorno opcionales (si se quiere sobrescribir desde .env)
+      # Si no se definen, application-docker.properties usa valores por defecto
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE:-spring_batch_db}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_ROOT_USERNAME:-root}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-Evertec.2025}
+    ports:
+      - "8585:8585"
+    depends_on:
+      # Wait for database to be healthy before starting app
+      db:
+        condition: service_healthy
+    networks:
+      - spring-batch-network
+
+# ============================================
+# Docker Networks
+# ============================================
+networks:
+  spring-batch-network:
+    driver: bridge
+
+# ============================================
+# Docker Volumes
+# ============================================
+volumes:
+  mysql_data:
+    driver: local

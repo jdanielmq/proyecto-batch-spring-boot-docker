@@ -1,0 +1,50 @@
+# Build artifacts
+target/
+*.jar
+*.war
+*.ear
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+docs/
+ejemplos/
+
+# Test files
+src/test/
+
+# Maven wrapper (not needed in container)
+.mvn/
+mvnw
+mvnw.cmd
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment files (use docker-compose or env vars)
+.env
+.env.local
+
+# Docker files (avoid recursive copy)
+Dockerfile
+.dockerignore
+docker-compose.yml
+

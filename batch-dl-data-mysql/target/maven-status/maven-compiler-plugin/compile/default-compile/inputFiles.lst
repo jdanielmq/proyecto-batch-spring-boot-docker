@@ -1,0 +1,5 @@
+/Users/juandanielmq/evertec/workspace/batch-dl-data-mysql/src/main/java/com/evertecinc/data/app/BatchDataApplication.java
+/Users/juandanielmq/evertec/workspace/batch-dl-data-mysql/src/main/java/com/evertecinc/data/app/controller/BatchController.java
+/Users/juandanielmq/evertec/workspace/batch-dl-data-mysql/src/main/java/com/evertecinc/data/app/repository/RegistroRepository.java
+/Users/juandanielmq/evertec/workspace/batch-dl-data-mysql/src/main/java/com/evertecinc/data/app/services/BatchImp.java
+/Users/juandanielmq/evertec/workspace/batch-dl-data-mysql/src/main/java/com/evertecinc/data/app/services/IBatch.java
